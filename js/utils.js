@@ -1,3 +1,5 @@
+import { getPlayAgainButton, getTimerElement, getStartButton } from './selectors.js';
+import { GAME_STATUS, GAME_TIME } from './constants.js';
 function shuffle(arr) {
   if (!Array.isArray(arr) || arr.length <= 2) return arr;
   for (let i = arr.length - 1; i > 1; i--) {
@@ -30,3 +32,62 @@ export const getRandomColorPairs = (count) => {
 
   return fullColorList;
 };
+
+export function showStartButton() {
+  const startButton = getStartButton();
+  if (!startButton) throw new Error('Code Error');
+  startButton.classList.add('show');
+}
+
+export function hideStartButton() {
+  const startButton = getStartButton();
+  if (!startButton) throw new Error('Code Error');
+  startButton.classList.remove('show');
+}
+
+export function showPlayAgainButton() {
+  const playAgainButton = getPlayAgainButton();
+  if (!playAgainButton) throw new Error('Code Error');
+  playAgainButton.classList.add('show');
+}
+
+export function hidePlayAgainButton() {
+  const playAgainButton = getPlayAgainButton();
+  if (!playAgainButton) throw new Error('Code Error');
+  playAgainButton.classList.remove('show');
+}
+
+export function setTimeText(text) {
+  const showYouWin = getTimerElement();
+  if (!showYouWin) throw new Error('Code Error');
+  showYouWin.textContent = text;
+}
+
+export function createTimer({ seconds, onChange, onFinish }) {
+  let intervalId = null;
+  clear();
+
+  function start() {
+    let currentSeconds = seconds;
+    intervalId = setInterval(() => {
+      // if(onChange) onChange(currentSeconds)
+      onChange?.(currentSeconds);
+
+      currentSeconds--;
+
+      if (currentSeconds < 0) {
+        clear();
+        onFinish?.();
+      }
+    }, 1000);
+  }
+
+  function clear() {
+    clearInterval(intervalId);
+  }
+
+  return {
+    start,
+    clear,
+  };
+}
